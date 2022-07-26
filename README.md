@@ -77,9 +77,11 @@ mainData sample as RawPropertyStore:
 
 subDataArray sample:
 
+Each subDataArray is identified by _subNodeId_.
+
 Legend: `0x0671, 1, 1662` means
 
-- NID = 0x0671
+- subNodeId = 0x0671
 - numberOfSubDataArray = 1
 - totalBytesOfSubData = 1662
 
