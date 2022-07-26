@@ -13,6 +13,7 @@ LTP <|-- Messaging
 
 @enduml
 @startuml schematic
+title implementaion ideas of NDB part\n
 
 class PstUtil {
     + PstStore openPst(ReadFile readFile)
@@ -24,7 +25,7 @@ interface PstStore {
 
 interface PstNode {
     .. describe node itself ..
-    + long getNodeId();
+    + long getNodeId()
 
     .. tree traversal ..
     + PstNode getParent()
@@ -44,5 +45,99 @@ PstStore " 1 " --* " N " PstNode
 interface ReadFile {
     + int readFile(byte[] buffer, long position, int length)
 }
+
+@enduml
+@startuml ltp_heap
+title modelling ideas of LTP part: heap\n
+class NodeHeapUtil {
+    + NodeHeap getHeapFromMain(PstNode node)
+    + NodeHeap getHeapFromSub(PstNode node, int subNodeId)
+}
+
+interface NodeHeap {
+    - PstNode node
+    + byte bClientSig
+    + int userRootHNID
+
+    + byte[] getHeapBuffer(int hnid)
+}
+
+note as N1
+    HNID:
+
+    heapIndexOrSubNodeId
+
+    - Zero if empty maybe.
+    - If ((it & 31) != 0), it is a subNodeId.
+    - Or else, ((it / 32) - 1) is a heapIndex.
+end note
+
+NodeHeapUtil --* NodeHeap
+@enduml
+@startuml ltp_pc
+title modelling ideas of LTP part: property context\n
+class PropertyContextUtil {
+    // throw Exception if a heap bClientSig != bTypePC 0xBC
+
+    + PropertyContext getPropertyContext(NodeHeap heap, ValueResolver resolver)
+}
+
+interface PropertyContext {
+    - NodeHeap heap
+    - ValueResolver resolver
+
+    + RawProperty[] listRaw()
+    + Property[] list()
+}
+
+interface ValueResolver {
+    + object resolveValueOf(int type, object value)
+}
+
+class RawProperty {
+    + int key
+    + int type
+    + int value
+}
+
+class Property {
+    + int key
+    + int type
+    + object value
+}
+
+PropertyContextUtil --* PropertyContext
+PropertyContext --* Property
+PropertyContext --* RawProperty
+PropertyContext -- ValueResolver
+
+legend
+    <b>Some of property types:</b>
+
+    |= Type |= Java type sample |
+    | PT_BOOLEAN | boolean |
+    | PT_SHORT | int |
+    | PT_LONG | long |
+    | PT_DOUBLE | double |
+    | PT_STRING8 | String or byte[] |
+    | PT_UNICODE | String |
+    | PT_SYSTIME | Date |
+    | PT_OBJECT | Object |
+
+    <b>ValueResolver:</b>
+
+    ValueResolver is used to resolve only external factors.
+    
+    For example:
+    
+    - having converter from ansi PT_STRING8 to unicode String
+
+    <b>value:</b>
+
+    value is HNID in case of having:
+    
+    - variable length data like PT_STRING and PT_UNICODE
+    - longer fixed data like PT_DOUBLE
+end legend
 
 @enduml

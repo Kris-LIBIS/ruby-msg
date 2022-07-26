@@ -109,11 +109,18 @@ PDFs {
 
 PST is formatted in multi layerd structure.
 
-The above overview represents implementaion ideas of NDB part.
-
 ![](out/plantuml/base/layers.png)
 
-See also:
+
+LTP heap
+
+![](out/plantuml/base/ltp_heap.png)
+
+LTP property context
+
+![](out/plantuml/base/ltp_pc.png)
+
+## Documents
 
 NDB:
 
