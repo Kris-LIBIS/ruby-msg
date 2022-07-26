@@ -1,0 +1,34 @@
+@startuml schematic
+
+class PstUtil {
+    + PstStore openPst(ReadFile readFile)
+}
+
+interface PstStore {
+    + PstNode getOneNodeBy(long nodeId)
+}
+
+interface PstNode {
+    .. describe node itself ..
+    + long getNodeId();
+
+    .. tree traversal ..
+    + PstNode getParent()
+    + PstNode[] getChildren()
+
+    .. data operations ..
+    + byte[] getMainData()
+    + byte[][] getSubDataArray(long subNodeId)
+
+    .. debug purpose (not mandatory) ..
+    + Map<long, int[]> listSubData()
+}
+
+PstUtil --* PstStore
+PstStore " 1 " --* " N " PstNode
+
+interface ReadFile {
+    + int readFile(byte[] buffer, long position, int length)
+}
+
+@enduml
