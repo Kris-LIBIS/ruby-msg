@@ -1,3 +1,17 @@
+@startuml layers
+object NDB {
+    // Node Database (NDB) Layer
+}
+object LTP {
+    // Lists, Tables, and Properties (LTP) Layer
+}
+object Messaging {
+    // Messaging Layer
+}
+NDB <|-- LTP
+LTP <|-- Messaging
+
+@enduml
 @startuml schematic
 
 class PstUtil {
