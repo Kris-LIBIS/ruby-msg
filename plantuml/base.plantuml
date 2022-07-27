@@ -66,6 +66,10 @@ interface NodeHeap {
     + byte bClientSig
     + int userRootHNID
 
+    + NodeHeapReader getReader()
+}
+
+interface NodeHeapReader {
     + byte[] getHeapBuffer(int hnid)
 }
 
@@ -80,6 +84,7 @@ note as N1
 end note
 
 NodeHeapUtil --* NodeHeap
+NodeHeap -- NodeHeapReader
 @enduml
 @startuml ltp_pc
 title modelling ideas of LTP part: property context\n
@@ -98,7 +103,7 @@ interface PropertyContext {
 }
 
 interface PropertyValueResolver {
-    + object resolveValueOf(int key, int type, byte[] value, NodeHeap heap)
+    + object resolveValueOf(int key, int type, byte[] value, NodeHeapReader heap)
 }
 
 class RawProperty {
@@ -152,7 +157,7 @@ legend
     - A byte array:
       - Always 4 bytes in PropertyContext. It can be casted up to int value.
       - Always 8 bytes in TableContext. It can be casted up to long value.
-    - A HeapNode: resolve HNID (convert byte[] value to int, and use it as HNID)
+    - A NodeHeap: resolve HNID (convert byte[] value to int, and use it as HNID)
     
     Also resolve external factors, for example:
     
@@ -181,7 +186,7 @@ interface Row {
 }
 
 interface PropertyValueResolver {
-    + object resolveValueOf(int key, int type, byte[] value, NodeHeap heap)
+    + object resolveValueOf(int key, int type, byte[] value, NodeHeapReader heap)
 }
 
 class RawProperty {
