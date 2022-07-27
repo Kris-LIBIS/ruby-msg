@@ -32,15 +32,22 @@ interface PstNode {
     + PstNode[] getChildren()
 
     .. data operations ..
-    + byte[] getMainData()
-    + byte[][] getSubDataArray(long subNodeId)
+    + PstNodeReader getNodeReader()
 
     .. debug purpose (not mandatory) ..
     + Map<long, int[]> listSubData()
 }
 
+interface PstNodeReader {
+    .. data operations ..
+    + byte[] getMainData()
+    + byte[][] getSubDataArray(long subNodeId)
+}
+
 PstUtil --* PstStore
+PstUtil -- ReadFile
 PstStore " 1 " --* " N " PstNode
+PstNode -- PstNodeReader
 
 interface ReadFile {
     + int readFile(byte[] buffer, long position, int length)
@@ -50,12 +57,12 @@ interface ReadFile {
 @startuml ltp_heap
 title modelling ideas of LTP part: heap\n
 class NodeHeapUtil {
-    + NodeHeap getHeapFromMain(PstNode node)
-    + NodeHeap getHeapFromSub(PstNode node, int subNodeId)
+    + NodeHeap getHeapFromMain(PstNodeReader node)
+    + NodeHeap getHeapFromSub(PstNodeReader node, int subNodeId)
 }
 
 interface NodeHeap {
-    - PstNode node
+    - PstNodeReader node
     + byte bClientSig
     + int userRootHNID
 
