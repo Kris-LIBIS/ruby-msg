@@ -79,25 +79,25 @@ title modelling ideas of LTP part: property context\n
 class PropertyContextUtil {
     // throw Exception if a heap bClientSig != bTypePC 0xBC
 
-    + PropertyContext getPropertyContext(NodeHeap heap, ValueResolver resolver)
+    + PropertyContext getPropertyContext(NodeHeap heap, PropertyValueResolver resolver)
 }
 
 interface PropertyContext {
     - NodeHeap heap
-    - ValueResolver resolver
+    - PropertyValueResolver resolver
 
     + RawProperty[] listRaw()
     + Property[] list()
 }
 
-interface ValueResolver {
-    + object resolveValueOf(int type, object value)
+interface PropertyValueResolver {
+    + object resolveValueOf(int key, int type, byte[] value, NodeHeap heap)
 }
 
 class RawProperty {
     + int key
     + int type
-    + int value
+    + byte[] value
 }
 
 class Property {
@@ -109,7 +109,7 @@ class Property {
 PropertyContextUtil --* PropertyContext
 PropertyContext --* Property
 PropertyContext --* RawProperty
-PropertyContext -- ValueResolver
+PropertyContextUtil -- PropertyValueResolver
 
 legend
     <b>Some of property types:</b>
@@ -124,20 +124,75 @@ legend
     | PT_SYSTIME | Date |
     | PT_OBJECT | Object |
 
-    <b>ValueResolver:</b>
+    <b>byte[] value (4 bytes, 32 bit, little endian, unsigned int):</b>
 
-    ValueResolver is used to resolve only external factors.
+    value can represent direct value, for example:
     
-    For example:
-    
-    - having converter from ansi PT_STRING8 to unicode String
+    - It is INT8 about PT_BOOLEAN property.
+    - It is INT32 about PT_LONG property.
 
-    <b>value:</b>
-
-    value is HNID in case of having:
+    value may represent HNID in case of having:
     
     - variable length data like PT_STRING and PT_UNICODE
     - longer fixed data like PT_DOUBLE
+
+    <b>PropertyValueResolver:</b>
+
+    PropertyValueResolver is responsible to resolve raw byte array.
+
+    It can use:
+
+    - A byte array:
+      - Always 4 bytes in PropertyContext. It can be casted up to int value.
+      - Always 8 bytes in TableContext. It can be casted up to long value.
+    - A HeapNode: resolve HNID (convert byte[] value to int, and use it as HNID)
+    
+    Also resolve external factors, for example:
+    
+    - convert from ansi PT_STRING8 to unicode String
 end legend
+
+@enduml
+@startuml ltp_tc
+title modelling ideas of LTP part: table context\n
+class TableContextUtil {
+    // throw Exception if a heap bClientSig != bTypeTC 0x7C
+
+    + TableContext getTableContext(NodeHeap heap, PropertyValueResolver resolver)
+}
+
+interface TableContext {
+    - NodeHeap heap
+    - PropertyValueResolver resolver
+
+    + Row[] rows()
+}
+
+interface Row {
+    + RawPropertyValue[] listRaw()
+    + PropertyValue[] list()
+}
+
+interface PropertyValueResolver {
+    + object resolveValueOf(int key, int type, byte[] value, NodeHeap heap)
+}
+
+class RawProperty {
+    + int key
+    + int type
+    + byte[] value
+}
+
+class Property {
+    + int key
+    + int type
+    + object value
+}
+
+TableContextUtil --* TableContext
+TableContext --* Row
+Row --* Property
+Row --* RawProperty
+TableContextUtil -- PropertyValueResolver
 
 @enduml
