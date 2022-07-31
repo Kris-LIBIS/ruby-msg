@@ -21,6 +21,7 @@ class PstUtil {
 
 interface PstStore {
     + PstNode getOneNodeBy(long nodeId)
+    + boolean hasOneNodeBy(long nodeId)
 }
 
 interface PstNode {
