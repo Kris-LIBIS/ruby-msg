@@ -124,6 +124,34 @@ LTP table context
 
 ![](out/plantuml/base/ltp_tc.png)
 
+## NID_TYPE_
+
+This is sample view of pst structure constructed on node hierarchy.
+
+```txt
+    - SPAM Search Folder 2 [8739, 0x03] {}
+    - Outlook データ ファイルのトップ [32802, 0x02] {}
+      - 削除済みアイテム [32866, 0x02] {}
+      - サンプル [32930, 0x02] {}
+        - test mail [2097188, 0x04] {subData(0x0692, 1, 524), subData(0x803f, 1, 1624)}
+        - TEST [2097220, 0x04] {subData(0x0692, 1, 524), subData(0x805f, 1, 1548)}
+        - TEST [2097252, 0x04] {subData(0x0671, 1, 176), subData(0x0692, 1, 524), subData(0x8025, 1, 312), subData(0x809f, 1, 1548)}
+        ...
+    - 検索ルート [32834, 0x02] {}
+    - IPM_COMMON_VIEWS [32898, 0x02] {}
+```
+
+`32802` is a nodeId. Result of `32802 & 0x1f` is `0x02` (`NID_TYPE_NORMAL_FOLDER`) has description `Normal Folder object (PC)`.
+
+`32802 + 12` is also nodeId having nodeType `NID_TYPE_CONTENTS_TABLE` (`0x0e`) with description `Contents table (TC)`.
+
+The node type `NID_TYPE_CONTENTS_TABLE` may exist, or else not. Even if it exists, it is not listed on tree under `ROOT_FOLDER_DESCRIPTOR_IDENTIFIER` (`290`) node. It is orphan node.
+
+See also:
+
+- [[MS-PST]: NID (Node ID) | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/18d7644e-cb33-4e11-95c0-34d8a84fbff6)
+- [[MS-PST]: Mandatory Nodes | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/661f9921-54ff-4768-b98c-91954312af52)
+
 ## Documents
 
 NDB:
