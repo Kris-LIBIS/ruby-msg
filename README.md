@@ -27,7 +27,7 @@ Notes:
 
 mainData sample as RawPropertyStore:
 
-- mainData may or may not represent RawPropertyStore. See [NID_TYPE_](#nid_type_)
+- mainData may or may not represent RawPropertyStore. See `NID_TYPE_` section.
 - RawProperty format is `{(key and type), value)}`.
 - For example `{(001a001f), IPM.Note)}` means:
   - propertyId = _0x001a_
