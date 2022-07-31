@@ -13,7 +13,7 @@ This is a private fork of https://github.com/aquasync/ruby-msg repository.
 
 Notes:
 
-- `nodeId` is unique number in pst file.
+- `nodeId` in PstStore/PstNode is unique number in pst file.
   - There are some known `nodeId`s from Outlook. For example `290` is useful to obtain top_node in both pst and ost file.
 - PstNode consists from tree structure. 
   - There is zero or one parent.
@@ -21,21 +21,39 @@ Notes:
   - There may be one or some root nodes (having no parent).
 - `PstNode` is application unaware structure.
   - Outlook uses pst and ost to store mail folders and items like mail, contact and so on.
-  - `mainData` represents usually RawPropertyStore. It is simply _key,type=value_ pairs.
-  - `subDataArray` represents collection objects like attachment files, recipients and so on.
+  - getData() returns contents corresponding to `NID_TYPE_`. See `NID_TYPE_` section.
   - Each `byte[]` length ranges from 0 to 8176. It cannot exceed 8176 bytes. This comes from PST limitation.
 
-mainData sample as RawPropertyStore:
+### PstNode sample structure
 
-- mainData may or may not represent RawPropertyStore. See `NID_TYPE_` section.
+This is a sample structure starting from a PstNode. Each `SL#` means it is a SLBlock entry. The indent shows that it is child PstSubNode.
+
+```
+PstNode nodeId:0x2001c4 nidType:0x04 (NID_TYPE_NORMAL_MESSAGE)
+  SL#0 nodeId:0x0671 nidType:0x11 (NID_TYPE_ATTACHMENT_TABLE)
+  SL#1 nodeId:0x80e5 nidType:0x05 (NID_TYPE_ATTACHMENT)
+    SL#0 nodeId:0x82df nidType:0x1f (NID_TYPE_LTP)
+    SL#1 nodeId:0x82ff nidType:0x1f (NID_TYPE_LTP)
+  SL#2 nodeId:0x82bf nidType:0x1f (NID_TYPE_LTP)
+```
+
+The primary node `PstNode nodeId:0x2001c4 nidType:0x04 (NID_TYPE_NORMAL_MESSAGE)
+` stores RawPropertyStore (PropertyContext in msft document):
+
 - RawProperty format is `{(key and type), value)}`.
 - For example `{(001a001f), IPM.Note)}` means:
   - propertyId = _0x001a_
   - dataType = _0x001f_ (PT_UNICODE)
+  - This is _PidTagMessageClass_. See also: [PidTagMessageClass Canonical Property | Microsoft Docs](https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/pidtagmessageclass-canonical-property)
   - value = `IPM.Note`
-  - This is _PidTagMessageClass_.
-  - See also: [PidTagMessageClass Canonical Property | Microsoft Docs](https://docs.microsoft.com/en-us/office/client-developer/outlook/mapi/pidtagmessageclass-canonical-property)
-- RawPropertyStore is `Property Context (PC)`. See also: [[MS-PST]: Property Context (PC) | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/294c83c6-ff92-42f5-b6b6-876c29fa9737)
+
+See also:
+
+- [[MS-PST]: Property Context (PC) | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/294c83c6-ff92-42f5-b6b6-876c29fa9737)
+
+### RawPropertyStore sample
+
+RawPropertyStore stores a set of properties.
 
 ```
 {(0002000b), True)}
@@ -75,35 +93,48 @@ mainData sample as RawPropertyStore:
 {(80b00003), 1041)}
 ```
 
-subDataArray sample:
+### The secondary node usage
 
-Each subDataArray is identified by _subNodeId_.
+- subNode `0x671` must exist, if the message has one or more _attachment files_. See also: [[MS-PST]: Attachment Table Template | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/47c336f7-2d9b-4f22-91c7-5bb422aaebbb)
+- subNode `0x692` must exist, if the message has one or more _recipient entries_. See also: [[MS-PST]: Recipient Table Template | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/bb069b2b-80ad-46d5-b86f-33487d16bf0c)
 
-Legend: `0x0671, 1, 1662` means
+### Embedded messages
 
-- subNodeId = 0x0671
-- numberOfSubDataArray = 1
-- totalBytesOfSubData = 1662
+This is a sample having depth of 4 embedded message.
 
-```
-PDFs {
-    subData(0x0671, 1, 1662), 
-    subData(0x8285, 1, 370), 
-    subData(0x87bf, 1, 3512), 
-    subData(0x82a5, 1, 370), 
-    subData(0x87ff, 1, 3512), 
-    subData(0x82c5, 1, 370), 
-    subData(0x883f, 1, 3512), 
-    subData(0x82e5, 1, 370), 
-    subData(0x887f, 1, 3512), 
-    subData(0x8305, 1, 334), 
-    subData(0x88bf, 1, 3512), 
-    subData(0x88df, 1, 3134)
-}
+```txt
+┌ Alpha
+└┬ Beta
+ └┬ Gamma
+  └─ Delta
 ```
 
-- subData `0x671` must exist, if the message has one or more _attachment files_. See also: [[MS-PST]: Attachment Table Template | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/47c336f7-2d9b-4f22-91c7-5bb422aaebbb)
-- subData `0x692` must exist, if the message has one or more _recipient entries_. See also: [[MS-PST]: Recipient Table Template | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/bb069b2b-80ad-46d5-b86f-33487d16bf0c)
+This shows that `NID_TYPE_NORMAL_MESSAGE` of embedded messages appear in deeper hierarchy.
+
+```txt
+PstNode nodeId:0x2097188 nidType:0x04 (NID_TYPE_NORMAL_MESSAGE)
+  SL#0 nodeId:0x0671 nidType:0x11 (NID_TYPE_ATTACHMENT_TABLE)
+  SL#1 nodeId:0x8025 nidType:0x05 (NID_TYPE_ATTACHMENT)
+    SL#0 nodeId:0x803f nidType:0x1f (NID_TYPE_LTP)
+  SL#2 nodeId:0x8045 nidType:0x05 (NID_TYPE_ATTACHMENT)
+    SL#0 nodeId:0x80ff nidType:0x1f (NID_TYPE_LTP)
+    SL#1 nodeId:0x200044 nidType:0x04 (NID_TYPE_NORMAL_MESSAGE)
+      SL#0 nodeId:0x0671 nidType:0x11 (NID_TYPE_ATTACHMENT_TABLE)
+      SL#1 nodeId:0x8065 nidType:0x05 (NID_TYPE_ATTACHMENT)
+        SL#0 nodeId:0x805f nidType:0x1f (NID_TYPE_LTP)
+      SL#2 nodeId:0x8085 nidType:0x05 (NID_TYPE_ATTACHMENT)
+        SL#0 nodeId:0x80df nidType:0x1f (NID_TYPE_LTP)
+        SL#1 nodeId:0x200064 nidType:0x04 (NID_TYPE_NORMAL_MESSAGE)
+          SL#0 nodeId:0x0671 nidType:0x11 (NID_TYPE_ATTACHMENT_TABLE)
+          SL#1 nodeId:0x80a5 nidType:0x05 (NID_TYPE_ATTACHMENT)
+            SL#0 nodeId:0x807f nidType:0x1f (NID_TYPE_LTP)
+          SL#2 nodeId:0x80c5 nidType:0x05 (NID_TYPE_ATTACHMENT)
+            SL#0 nodeId:0x80bf nidType:0x1f (NID_TYPE_LTP)
+            SL#1 nodeId:0x200084 nidType:0x04 (NID_TYPE_NORMAL_MESSAGE)
+              SL#0 nodeId:0x0671 nidType:0x11 (NID_TYPE_ATTACHMENT_TABLE)
+              SL#1 nodeId:0x80e5 nidType:0x05 (NID_TYPE_ATTACHMENT)
+                SL#0 nodeId:0x809f nidType:0x1f (NID_TYPE_LTP)
+```
 
 ## PST layers
 
@@ -129,23 +160,23 @@ LTP table context
 This is sample view of pst structure constructed on node hierarchy.
 
 ```txt
-    - SPAM Search Folder 2 [8739, 0x03] {}
-    - Outlook データ ファイルのトップ [32802, 0x02] {}
-      - 削除済みアイテム [32866, 0x02] {}
-      - サンプル [32930, 0x02] {}
-        - test mail [2097188, 0x04] {subData(0x0692, 1, 524), subData(0x803f, 1, 1624)}
-        - TEST [2097220, 0x04] {subData(0x0692, 1, 524), subData(0x805f, 1, 1548)}
-        - TEST [2097252, 0x04] {subData(0x0671, 1, 176), subData(0x0692, 1, 524), subData(0x8025, 1, 312), subData(0x809f, 1, 1548)}
+    - SPAM Search Folder 2 [8739, 0x03]
+    - Outlook データ ファイルのトップ [32802, 0x02]
+      - 削除済みアイテム [32866, 0x02]
+      - サンプル [32930, 0x02]
+        - test mail [2097188, 0x04]
+        - TEST [2097220, 0x04]
+        - TEST [2097252, 0x04]
         ...
-    - 検索ルート [32834, 0x02] {}
-    - IPM_COMMON_VIEWS [32898, 0x02] {}
+    - 検索ルート [32834, 0x02]
+    - IPM_COMMON_VIEWS [32898, 0x02]
 ```
 
 `32802` is a nodeId. Result of `32802 & 0x1f` is `0x02` (`NID_TYPE_NORMAL_FOLDER`) has description `Normal Folder object (PC)`.
 
 `32802 + 12` is also nodeId having nodeType `NID_TYPE_CONTENTS_TABLE` (`0x0e`) with description `Contents table (TC)`.
 
-The node type `NID_TYPE_CONTENTS_TABLE` may exist, or else not. Even if it exists, it is not listed on tree under `ROOT_FOLDER_DESCRIPTOR_IDENTIFIER` (`290`) node. It is orphan node.
+The node type `NID_TYPE_CONTENTS_TABLE` may exist, or else not. Even if it exists, it is not listed on tree under `ROOT_FOLDER_DESCRIPTOR_IDENTIFIER` (`290`) node. It is an orphan node.
 
 See also:
 

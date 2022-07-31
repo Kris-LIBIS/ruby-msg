@@ -32,23 +32,35 @@ interface PstNode {
     + PstNode getParent()
     + PstNode[] getChildren()
 
-    .. data operations ..
-    + PstNodeReader getNodeReader()
-
-    .. debug purpose (not mandatory) ..
-    + Map<long, int[]> listSubData()
+    .. sub tree traversal ..
+    + PstSubNode getSubNode()
 }
 
-interface PstNodeReader {
+interface PstSubNode {
+    .. describe node itself ..
+    + long getNodeId()
+
+    .. sub tree traversal ..
+    + PstSubNode getChildBy(long childNodeId)
+
     .. data operations ..
-    + byte[] getMainData()
-    + byte[][] getSubDataArray(long subNodeId)
+    + byte[][] getData()
+}
+
+interface PstNodeBased {
+
+}
+
+interface SLBlockEntryBased {
+
 }
 
 PstUtil --* PstStore
 PstUtil -- ReadFile
 PstStore " 1 " --* " N " PstNode
-PstNode -- PstNodeReader
+PstNode -- PstSubNode
+PstSubNode <|-- PstNodeBased
+PstSubNode <|-- SLBlockEntryBased
 
 interface ReadFile {
     + int readFile(byte[] buffer, long position, int length)
