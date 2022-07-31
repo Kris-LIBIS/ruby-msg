@@ -152,6 +152,43 @@ See also:
 - [[MS-PST]: NID (Node ID) | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/18d7644e-cb33-4e11-95c0-34d8a84fbff6)
 - [[MS-PST]: Mandatory Nodes | Microsoft Docs](https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/661f9921-54ff-4768-b98c-91954312af52)
 
+## OST file and unzip
+
+Starting data with `78 9c` in `.ost` may be zipped by zlib. The condition to incur compression status is still unknown.
+
+It may be applied to:
+
+- Returned buffer from `getHeap`
+- Returned buffer from `getHeapBuffers`
+
+This is a zipped sample:
+
+```txt
+00000000  78 9c eb 62 7a b3 47 81  01 02 b6 32 b1 31 38 00  |x..bz.G....2.18.|
+00000010  69 46 03 79 86 05 40 9a  05 48 83 00 bb 81 03 43  |iF.y..@..H.....C|
+00000020  03 90 e6 00 d2 09 40 9a  c9 8c 19 2c ce 0c a5 b9  |......@....,....|
+00000030  cc b8 19 18 81 f4 55 33  26 c6 06 20 e3 3a 90 76  |......U3&.. .:.v|
+00000040  00 d2 37 cc 98 04 15 80  f4 4d 20 3f 01 48 3f b1  |..7......M ?.H?.|
+00000050  e7 06 ab 7f 0a a5 1f a5  32 31 3e 00 d2 8f 81 34  |........21>....4|
+00000060  c8 00 91 34 26 90 31 0c  16 69 cc 0c 3c 40 da 12  |...4&.1..i..<@..|
+00000070  48 83 04 be a4 8b 30 1c  00 b9 2b 83 99 81 09 48  |H.....0...+....H|
+00000080  0b 34 40 e8 0f 67 b3 4b  de cc bf c1 98 a0 37 33  |.4@..g.K......73|
+00000090  1d 44 bf 36 f8 63 70 c2  40 81 41 97 41 81 e1 21  |.D.6.cp.@.A.A..!|
+000000a0  90 fd da e0 8e c1 61 83  f5 06 3b 0d a0 1e 64 bd  |......a...;...d.|
+000000b0  56 1e 31 3b 63 43 ba fb  5c bf 03 22 81 33 15 37  |V.1;cC..\..".3.7|
+000000c0  03 fd 64 2a 82 4d 90 0d  a8 5a 06 8a bd 80 b8 02  |..d*.M...Z......|
+000000d0  8a 97 41 4d ba bd cb 52  f6 c8 a6 32 d7 39 25 25  |..AM...R...2.9%%|
+000000e0  6d b5 e7 bf 64 33 32 ac  98 74 66 4b e9 e6 5a 8f  |m...d32..tfK..Z.|
+000000f0  dd a5 2f 96 6a 66 97 df  02 a9 82 78 87 68 d5 cc  |../.jf.....x.h..|
+00000100  b8 54 9b ac 2d 93 28 9d  38 dd 77 7f 8e 7f d9 54  |.T..-.(.8.w....T|
+00000110  99 76 2b 70 68 e1 74 09  a6 6a 08 60 69 30 02 ea  |.v+ph.t..j.`i0..|
+00000120  d3 23 c5 45 2c 40 4c ba  2e 36 06 3c ae c3 aa 83  |.#.E,@L..6.<....|
+00000130  15 18 b9 a0 18 e7 61 10  61 d8 c3 70 84 e1 0c c3  |......a.a..p....|
+00000140  33 86 77 c0 e0 13 67 dc  cb f8 9a 31 9a a9 93 09  |3.w...g....1....|
+00000150  00 88 7e bf 85                                    |..~..|
+00000155
+```
+
 ## Documents
 
 NDB:
