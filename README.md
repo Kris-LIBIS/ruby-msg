@@ -158,7 +158,7 @@ Starting data with `78 9c` in `.ost` may be zipped by zlib. The condition to inc
 
 It may be applied to:
 
-- Returned buffer from `getHeap`
+- Returned buffer from `getHeapFromMain` and `getHeapFromSub`
 - Returned buffer from `getHeapBuffers`
 
 This is a zipped sample:

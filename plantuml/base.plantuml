@@ -70,7 +70,7 @@ interface NodeHeap {
 }
 
 interface NodeHeapReader {
-    + byte[] getHeapBuffer(int hnid)
+    + byte[] getHeapBuffers(int hnid)
 }
 
 note as N1
