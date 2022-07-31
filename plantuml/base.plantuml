@@ -70,12 +70,11 @@ interface ReadFile {
 @startuml ltp_heap
 title modelling ideas of LTP part: heap\n
 class NodeHeapUtil {
-    + NodeHeap getHeapFromMain(PstNodeReader node)
-    + NodeHeap getHeapFromSub(PstNodeReader node, int subNodeId)
+    + NodeHeap getHeapFrom(PstSubNode node)
 }
 
 interface NodeHeap {
-    - PstNodeReader node
+    - PstSubNode node
     + byte bClientSig
     + int userRootHNID
 
@@ -83,16 +82,16 @@ interface NodeHeap {
 }
 
 interface NodeHeapReader {
-    + byte[] getHeapBuffers(int hnid)
+    + byte[] getHeapBuffer(int hnid)
 }
 
 note as N1
     HNID:
 
-    heapIndexOrSubNodeId
+    heapIndexOrChildNodeId
 
     - Zero if empty maybe.
-    - If ((it & 31) != 0), it is a subNodeId.
+    - If ((it & 31) != 0), it is a childNodeId.
     - Or else, ((it / 32) - 1) is a heapIndex.
 end note
 

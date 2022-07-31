@@ -157,7 +157,7 @@ LTP table context
 
 ## NID_TYPE_
 
-This is sample view of pst structure constructed on node hierarchy.
+This is a sample view of pst structure, which is constructed on node hierarchy.
 
 ```txt
     - SPAM Search Folder 2 [8739, 0x03]
@@ -185,12 +185,12 @@ See also:
 
 ## OST file and unzip
 
-Starting data with `78 9c` in `.ost` may be zipped by zlib. The condition to incur compression status is still unknown.
+Starting data with `78 9c` in `.ost` file may be zipped by zlib. The condition to incur compression status is still unknown.
 
 It may be applied to:
 
-- Returned buffer from `getHeapFromMain` and `getHeapFromSub`
-- Returned buffer from `getHeapBuffers`
+- Returned buffer from `getHeapFrom`
+- Returned buffer from `getHeapBuffer`
 
 This is a zipped sample:
 
