@@ -187,10 +187,7 @@ See also:
 
 Starting data with `78 9c` in `.ost` file may be zipped by zlib. The condition to incur compression status is still unknown.
 
-It may be applied to:
-
-- Returned buffer from `getHeapFrom`
-- Returned buffer from `getHeapBuffer`
+The zipping will be applied to block unit.
 
 This is a zipped sample:
 
