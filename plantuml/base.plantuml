@@ -68,7 +68,7 @@ interface ReadFile {
 
 @enduml
 @startuml ltp_heap
-title modelling ideas of LTP part: heap\n
+title modelling ideas of LTP part: node heap\n
 class NodeHeapUtil {
     + NodeHeap getHeapFrom(PstSubNode node)
 }
@@ -97,6 +97,29 @@ end note
 
 NodeHeapUtil --* NodeHeap
 NodeHeap -- NodeHeapReader
+@enduml
+@startuml ltp_btheap
+title modelling ideas of LTP part: btree heap\n
+class BTHeapUtil {
+    + BTHeapReader getBTHeapReaderFrom(NodeHeapReader heap, int hnid)
+}
+
+interface BTHeapReader {
+    - NodeHeapReader heap
+
+    + BTHeapEntry[] list()
+    + BTHeapEntry findByKey(byte[] key)
+}
+
+class BTHeapEntry {
+    + byte[] key   // 2, 4, 8 or 16 bytes
+    + byte[] data   // 1 ~ 32 bytes
+}
+
+
+BTHeapUtil --* BTHeapReader
+BTHeapReader --* BTHeapEntry
+
 @enduml
 @startuml ltp_pc
 title modelling ideas of LTP part: property context\n

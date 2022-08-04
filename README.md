@@ -142,10 +142,13 @@ PST is formatted in multi layerd structure.
 
 ![](out/plantuml/base/layers.png)
 
-
-LTP heap
+LTP node heap
 
 ![](out/plantuml/base/ltp_heap.png)
+
+LTP btree heap
+
+![](out/plantuml/base/ltp_btheap.png)
 
 LTP property context
 
