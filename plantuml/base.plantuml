@@ -108,7 +108,6 @@ interface BTHeapReader {
     - NodeHeapReader heap
 
     + BTHeapEntry[] list()
-    + BTHeapEntry findByKey(byte[] key)
 }
 
 class BTHeapEntry {
