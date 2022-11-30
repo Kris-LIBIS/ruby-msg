@@ -39,6 +39,7 @@ interface PstNode {
 interface PstSubNode {
     .. describe node itself ..
     + long getNodeId()
+    + boolean is4K()
 
     .. sub tree traversal ..
     + PstSubNode getChildBy(long childNodeId)

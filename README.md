@@ -23,6 +23,12 @@ Notes:
   - Outlook uses pst and ost to store mail folders and items like mail, contact and so on.
   - getData() returns contents corresponding to `NID_TYPE_`. See `NID_TYPE_` section.
   - Each `byte[]` length ranges from 0 to 8176. It cannot exceed 8176 bytes. This comes from PST limitation.
+- `is4K` is Outlook specific.
+  - is4K is applied to OST file, not PST file.
+  - Usually block size is 512 bytes.
+  - 4k file uses 4,096 bytes per block.
+  - And also multiply page index part by 8.
+  - The page index is about node heap.
 
 ### PstNode sample structure
 
