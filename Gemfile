@@ -6,3 +6,5 @@ gem "vpim", "= 13.11.11"
 # for yardoc
 gem 'yard', ">= 0.9.27"
 gem 'redcarpet', ">= 3.5.1"
+
+gem "rake"
