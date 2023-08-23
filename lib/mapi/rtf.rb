@@ -231,6 +231,13 @@ module Mapi
 			# require \fromhtml. is this worth keeping? apparently you see \\fromtext if it
 			# was converted from plain text. 
 			return nil unless rtf["\\fromhtml"]
+			# https://github.com/Scompler/ruby-msg/commit/c9046a2448bb6f4e08a8024d2b6637e2c12c23e5
+			# if scan.scan_until(/\\ansicpg/)
+			# 	code_page = "cp" + scan.scan(/\d+/)
+			# 	scan.pos = 0
+			# else
+			# 	code_page = 'ascii'
+			# end
 
 			last_pos = scan.pos
 			if scan.scan_until(/\\ansicpg/)
@@ -280,6 +287,8 @@ module Mapi
 				end
 			end
 			html.strip.empty? ? nil : html.force_encoding(code_page)
+			# https://github.com/Scompler/ruby-msg/commit/c9046a2448bb6f4e08a8024d2b6637e2c12c23e5
+			# html.strip.empty? ? nil : html.enode('utf-8', code_page)
 		end
 
 		module_function :rtf2html, :rtfdecompr

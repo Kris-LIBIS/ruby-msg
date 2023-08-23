@@ -303,6 +303,8 @@ module Mapi
 			@body_html = nil if @body_html.to_s.strip.empty?
 			if body_rtf and !@body_html
 				begin
+					#https://github.com/l3akage/ruby-msg/commit/90865e091b21c4b738dcba45015ddbbf7b3d3fb3
+					#@body_html = RTF.rtf2html body_rtf
 					@body_html = decode_ansi_str(RTF.rtf2html body_rtf)
 				rescue
 					Log.warn 'unable to extract html from rtf'
@@ -310,12 +312,16 @@ module Mapi
 				if !@body_html
 					Log.warn 'creating html body from rtf'
 					begin
+						#https://github.com/l3akage/ruby-msg/commit/90865e091b21c4b738dcba45015ddbbf7b3d3fb3
+						#@body_html = RTF::Converter.rtf2text body_rtf, :html
 						@body_html = decode_ansi_str(RTF::Converter.rtf2text body_rtf, :html)
 					rescue
 						Log.warn 'unable to convert rtf to html'
 					end
 				end
 			end
+			#https://github.com/l3akage/ruby-msg/commit/90865e091b21c4b738dcba45015ddbbf7b3d3fb3
+			#@body_html.force_encoding("iso-8859-1").encode('utf-8') if @body_html && @body_html.respond_to?(:encoding)
 			@body_html
 		end
 	end
