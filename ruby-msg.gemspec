@@ -1,7 +1,7 @@
 $:.unshift File.dirname(__FILE__) + '/lib'
 require 'mapi/version'
 
-PKG_NAME = 'ruby-msg-nx'
+PKG_NAME = 'libis-mapi'
 PKG_VERSION = Mapi::VERSION
 
 Gem::Specification.new do |s|
