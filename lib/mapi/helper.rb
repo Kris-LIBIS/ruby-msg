@@ -25,6 +25,7 @@ module Mapi
 		# @param str [String]
 		# @return [Object]
 		def convert_ansi_str str
+			return nil unless str
 			if @ansi_encoding
 				if @to_unicode
 					# assume we can convert this text to UTF-8
