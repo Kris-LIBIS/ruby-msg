@@ -306,17 +306,17 @@ module Mapi
 					#https://github.com/l3akage/ruby-msg/commit/90865e091b21c4b738dcba45015ddbbf7b3d3fb3
 					#@body_html = RTF.rtf2html body_rtf
 					@body_html = decode_ansi_str(RTF.rtf2html body_rtf)
-				rescue
-					Log.warn 'unable to extract html from rtf'
+				rescue => e
+					Log.warn "unable to extract html from rtf: #{e.class} #{e.message}"
 				end
 				if !@body_html
-					Log.warn 'creating html body from rtf'
+					# Log.warn 'creating html body from rtf'
 					begin
 						#https://github.com/l3akage/ruby-msg/commit/90865e091b21c4b738dcba45015ddbbf7b3d3fb3
 						#@body_html = RTF::Converter.rtf2text body_rtf, :html
 						@body_html = decode_ansi_str(RTF::Converter.rtf2text body_rtf, :html)
 					rescue
-						Log.warn 'unable to convert rtf to html'
+						Log.warn "unable to convert rtf to html #{e.class} #{e.message}"
 					end
 				end
 			end
